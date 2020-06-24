@@ -3,12 +3,25 @@ var url  = require('url');
 var app = express();
 var fs = require("fs");
  
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());//数据JSON类型
+app.use(bodyParser.urlencoded({ extended: false }));//解析post请求数据
+
+
+app.all('*',function(req,res,next){  
+    let origin=req.headers.origin;
+      res.setHeader('Access-Control-Allow-Origin',"*");
+      res.setHeader('Access-Control-Allow-Headers','Content-Type');
+        next();
+   })
+
 app.post('/api/login', function (req, res) {
    
     var requset_url = req.url;
     var strurl  = url.parse(requset_url,true).query;
-    var username = strurl.username;
-    var password = strurl.password;
+    // console.log(req.body);
+    var username = req.body.username;
+    var password = req.body.password;
     console.log("请求的账号:"+username," 密码:"+password);
    
     
@@ -23,7 +36,7 @@ app.post('/api/login', function (req, res) {
         else
         {
             var list = JSON.parse(data)["user"];
-            console.log(list);
+            // console.log(list);
             // list.array.forEach(element => {
             //     if(element["name"] == username && element["password"] == password)
             //     {
@@ -34,7 +47,7 @@ app.post('/api/login', function (req, res) {
             
             for(var i in list)
             {
-                console.log(list[i]["name"]+" "+list[i]["password"]);
+                // console.log(list[i]["name"]+" "+list[i]["password"]);
                 if(list[i]["name"] == username && list[i]["password"] == password)
                 {
                     match = true;
@@ -47,10 +60,11 @@ app.post('/api/login', function (req, res) {
         // 输出 JSON 格式
         var response = {
             "status":200,
-            "match": match,
-            "data":userinfo
+            "code": match?1:0,
+            "content":userinfo
         };
         console.log(response);
+        //res.setHeader("Access-Control-Allow-Origin","*");
         res.end(JSON.stringify(response));
         
     });
