@@ -7,14 +7,18 @@
             <el-input style="width:200px;margin:10px;" placeholder="请输入密码" v-model="password" show-password clearable></el-input>
         </div>
         <div>
+            <!-- <router-link :to="{name:'MainFrame'}"><el-button type="primary" icon = "el-icon-user" style="width:200px;margin:10px;" @click="login">登录</el-button></router-link> -->
             <el-button type="primary" icon = "el-icon-user" style="width:200px;margin:10px;" @click="login">登录</el-button>
         </div>
-        
     </div>
 </template>
 
 
 <script>
+
+import axios from 'axios';
+import router from '../router'
+
 export default {
   data() {
     return {
@@ -31,29 +35,27 @@ export default {
       else
       {
         localStorage.setItem('password', this.password);
-        localStorage.setItem('username', this.username);
-        const loginUrl = '/api/login';
+        localStorage.setItem('username', this.userName);
+        const loginUrl = 'http://localhost:8081/api/login';
         var params = new URLSearchParams();
-        params.append('username', this.username);
+        params.append('username', this.userName);
         params.append('password', this.password);
-        this.axios({
+        axios({
           method: 'post',
           url: loginUrl,
           data: params
         })
         .then(res => {
-            console.log(res)
-            if (res.status === 200) {
-              // console.log(res.code)
-              if (res.data.code === 2) {
+            // console.log(res)
+            if (res.data.status === 200) {
+              console.log(res.data)
+              if (res.data.code !== 1) {
                 alert('账号或密码错误');
-                this.username = ''
+                this.userName = ''
                 this.password = ''
-              } else if (res.data.userInfo.username === 'admin') {
-                this.$router.push('/main')
               } else {
-                alert('登录成功');
-                
+                // alert(res.data.content.id+"\n"+res.data.content.name+"\n"+res.data.content.password+"\n"+res.data.content.profession);
+                router.push({path:'/MainFrame'});
               }
             }
           })
