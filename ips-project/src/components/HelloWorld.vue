@@ -21,9 +21,10 @@ h1 {
   font-family:Verdana, Geneva, Tahoma, sans-serif;
   font-weight: bold;
   font-size: 20px;
+  text-align: center;
 }
 
 a {
-  color: #42b983;
+  color: skyblue;
 }
 </style>
